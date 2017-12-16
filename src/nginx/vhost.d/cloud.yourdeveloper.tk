@@ -1,0 +1,10 @@
+# set max upload size
+client_max_body_size 16000M;
+# do not show Nginx version
+server_tokens off;
+# timeout settings
+proxy_connect_timeout 1200;
+proxy_send_timeout 1200;
+proxy_read_timeout 1200;
+send_timeout 1200;
+

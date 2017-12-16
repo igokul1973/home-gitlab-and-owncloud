@@ -1,0 +1,79 @@
+version: '3'
+services:
+    proxy.local:
+        container_name: proxy
+        image: jwilder/nginx-proxy:latest
+        volumes: 
+            - ./src/nginx/conf.d/:/etc/nginx/conf.d/
+            - ./src/nginx/vhost.d:/etc/nginx/vhost.d:ro
+            - ./src/certs:/etc/nginx/certs
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            home_network:
+    gitlab.local:
+        container_name: gitlab
+        image: gitlab/gitlab-ce:latest
+        hostname: ${GITLAB_DOMAIN}
+        volumes: 
+            - ./src/gitlab/data:/var/opt/gitlab
+            - ./src/gitlab/logs:/var/log/gitlab
+            - ./src/gitlab/config:/etc/gitlab
+            - ./src/certs:/etc/gitlab/ssl
+        environment:
+            - VIRTUAL_HOST=git.yourdeveloper.tk
+        restart: always
+        ports: 
+            - "10022:22" # gitlab SSH port
+            - "6789:6789" # gitlab docker registry port
+        networks:
+            home_network:
+    redis:
+        container_name: redis
+        image: webhippie/redis:latest
+        volumes:
+          - ./src/redis:/var/lib/redis
+        environment:
+          - REDIS_MAXCONN=10000
+        restart: always
+        networks:
+            home_network:
+    mariadb:
+        container_name: mariadb
+        image: webhippie/mariadb:latest
+        volumes:
+            - ./src/mariadb/data:/var/lib/mysql
+        environment:
+            - MARIADB_ROOT_PASSWORD=owncloud
+            - MARIADB_USERNAME=owncloud
+            - MARIADB_PASSWORD=owncloud
+            - MARIADB_DATABASE=owncloud
+        restart: always
+        networks:
+            home_network:
+    owncloud.local:
+        container_name: owncloud
+        image: owncloud/server:${OWNCLOUD_VERSION}
+        hostname: ${OWNCLOUD_DOMAIN}
+        volumes: 
+            - /home/igor/ownCloud/data:/mnt/data
+        environment:
+            - VIRTUAL_HOST=${OWNCLOUD_DOMAIN}
+            - OWNCLOUD_DOMAIN=${OWNCLOUD_DOMAIN}
+            - OWNCLOUD_DB_TYPE=mysql
+            - OWNCLOUD_DB_NAME=owncloud
+            - OWNCLOUD_DB_USERNAME=owncloud
+            - OWNCLOUD_DB_PASSWORD=owncloud
+            - OWNCLOUD_DB_HOST=mariadb
+            - OWNCLOUD_ADMIN_USERNAME=${OWNCLOUD_ADMIN_USERNAME}
+            - OWNCLOUD_ADMIN_PASSWORD=${OWNCLOUD_ADMIN_PASSWORD}
+            - OWNCLOUD_REDIS_ENABLED=true
+            - OWNCLOUD_REDIS_HOST=redis
+            - OWNCLOUD_MAX_UPLOAD=16G
+        restart: always
+        networks:
+            home_network:
+networks:
+    home_network:
