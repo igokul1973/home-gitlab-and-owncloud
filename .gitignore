@@ -1,9 +1,9 @@
 .env
 *.local
 *.dev
-src/owncloud/data/*
+src/redis/*
 src/gitlab/data/*
-src/mariadb/data/*
+src/mariadb/owncloud/*
 src/gitlab/logs/*
 src/gitlab/config/*
 src/nginx/conf.d/*
