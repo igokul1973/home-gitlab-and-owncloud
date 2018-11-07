@@ -1,7 +1,12 @@
 .env
 *.local
 *.dev
+*.ru
+*.рф
+*.com
 src/redis/*
+src/mongo/*
+src/mongo.mironov/*
 src/gitlab/data/*
 src/mariadb/owncloud/*
 src/gitlab/logs/*

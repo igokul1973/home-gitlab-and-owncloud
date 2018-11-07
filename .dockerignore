@@ -1,0 +1,5 @@
+src/gitlab/data
+src/gitlab/logs
+src/redis/owncloud
+src/mariadb/owncloud/data
+src/mongo.mironov/4.0/data
